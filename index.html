@@ -1,0 +1,42 @@
+<script>
+let veriler = [];
+
+fetch("https://opensheet.elk.sh/1KyR4OYA55wyodUsU6Y6Ze22A6jzvuDMwX62IaW2YWPw/RadLexTR_Terimler
+")
+  .then(r => r.json())
+  .then(d => {
+    veriler = d;
+    listele(d);
+  });
+
+function listele(data){
+  const alan = document.getElementById("liste");
+  alan.innerHTML = "";
+  data.forEach(item => {
+    const div = document.createElement("div");
+    div.className = "list-item";
+    div.innerText = item.kelime;
+    div.onclick = () => detay(item);
+    alan.appendChild(div);
+  });
+}
+
+function filtrele(text){
+  const f = veriler.filter(v =>
+    v.kelime.toLowerCase().includes(text.toLowerCase())
+  );
+  listele(f);
+}
+
+function detay(item){
+  document.getElementById("listScreen").style.display = "none";
+  document.getElementById("detail").style.display = "block";
+  document.getElementById("kelime").innerText = item.kelime;
+  document.getElementById("aciklama").innerText = item.aciklama;
+}
+
+function geri(){
+  document.getElementById("detail").style.display = "none";
+  document.getElementById("listScreen").style.display = "block";
+}
+</script>
