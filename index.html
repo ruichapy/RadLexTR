@@ -1,42 +1,99 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radyoloji Sözlüğü</title>
+<link rel="manifest" href="manifest.json">
+
+<style>
+body { margin:0; font-family: Arial, sans-serif; background:#f4f6f8; }
+header { background:#1e3a8a; color:white; padding:16px; text-align:center; }
+input { width:100%; padding:12px; font-size:16px; margin-bottom:12px; }
+.list-item { background:white; padding:14px; margin-bottom:8px; border-radius:8px; cursor:pointer; }
+#detail { display:none; padding:16px; }
+button { padding:10px 14px; background:#1e3a8a; color:white; border:none; border-radius:6px; }
+p { line-height:1.5; }
+</style>
+</head>
+
+<body>
+
+<header>📘 Radyoloji Sözlüğü</header>
+
+<div id="listScreen" style="padding:16px">
+  <input type="text" placeholder="Ara..." onkeyup="filtrele(this.value)">
+  <div id="liste">Yükleniyor...</div>
+</div>
+
+<div id="detail">
+  <button onclick="geri()">← Geri</button>
+  <h2 id="kelime"></h2>
+
+  <p><strong>Anlam:</strong></p>
+  <p id="anlam"></p>
+
+  <p><strong>Örnek Cümle:</strong></p>
+  <p id="ornek"></p>
+
+  <p><strong>Cümlede Anlam:</strong></p>
+  <p id="cumlede"></p>
+</div>
+
 <script>
-let veriler = [];
+let tumVeriler = [];
 
 fetch("https://opensheet.elk.sh/1KyR4OYA55wyodUsU6Y6Ze22A6jzvuDMwX62IaW2YWPw/RadLexTR_Terimler
 ")
-  .then(r => r.json())
-  .then(d => {
-    veriler = d;
-    listele(d);
+  .then(function(response) {
+    return response.json();
+  })
+  .then(function(data) {
+    tumVeriler = data;
+    listeyiGoster(data);
+  })
+  .catch(function(error) {
+    document.getElementById("liste").innerText = "Veri alınamadı";
   });
 
-function listele(data){
+function listeyiGoster(data) {
   const alan = document.getElementById("liste");
   alan.innerHTML = "";
-  data.forEach(item => {
+
+  data.forEach(function(item) {
     const div = document.createElement("div");
     div.className = "list-item";
     div.innerText = item.kelime;
-    div.onclick = () => detay(item);
+    div.onclick = function() {
+      detay(item);
+    };
     alan.appendChild(div);
   });
 }
 
-function filtrele(text){
-  const f = veriler.filter(v =>
-    v.kelime.toLowerCase().includes(text.toLowerCase())
-  );
-  listele(f);
+function filtrele(metin) {
+  const sonuc = tumVeriler.filter(function(item) {
+    return item.kelime.toLowerCase().includes(metin.toLowerCase());
+  });
+  listeyiGoster(sonuc);
 }
 
-function detay(item){
+function detay(item) {
   document.getElementById("listScreen").style.display = "none";
   document.getElementById("detail").style.display = "block";
+
   document.getElementById("kelime").innerText = item.kelime;
-  document.getElementById("aciklama").innerText = item.aciklama;
+  document.getElementById("anlam").innerText = item.anlam;
+  document.getElementById("ornek").innerText = item.ornek_cumle;
+  document.getElementById("cumlede").innerText = item.cumlede_anlam;
 }
 
-function geri(){
+function geri() {
   document.getElementById("detail").style.display = "none";
   document.getElementById("listScreen").style.display = "block";
 }
 </script>
+
+</body>
+</html>
+
